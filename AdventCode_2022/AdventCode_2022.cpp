@@ -4,6 +4,7 @@
 #include <iostream>
 #include "AdventParser.h"
 #include "CalorieCount.h"
+#include "RPS.h"
 
 int main()
 {
@@ -18,6 +19,20 @@ int main()
     int First, Second, Third;
     CalorieParser.GetTopThreeCalories(First, Second, Third);
     std::cout << "Top three calories " << First << " " << Second << " " << Third << " Total " << First + Second + Third << std::endl;
+
+    std::cout << "Hosting Rock Paper Scissors Tournament" << std::endl;
+
+    ElfRPS::RPSParser RPS;
+
+    AdventParser::Parse("InputFiles\\RPSTournament.txt", RPS);
+
+    std::cout << "Tournament outcome. Score: " << RPS.GetScore() << std::endl;
+
+    RPS.SetMode(ElfRPS::Mode2);
+
+    AdventParser::Parse("InputFiles\\RPSTournament.txt", RPS);
+
+    std::cout << "Tournament outcome with correct directions. Score: " << RPS.GetScore() << std::endl;
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu

@@ -24,12 +24,18 @@
     <ClCompile Include="CalorieCount.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="RPS.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CalorieCount.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="AdventParser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RPS.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

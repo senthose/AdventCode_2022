@@ -142,10 +142,12 @@
     <ClCompile Include="AdventCode_2022.cpp" />
     <ClCompile Include="AdventParser.cpp" />
     <ClCompile Include="CalorieCount.cpp" />
+    <ClCompile Include="RPS.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AdventParser.h" />
     <ClInclude Include="CalorieCount.h" />
+    <ClInclude Include="RPS.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
