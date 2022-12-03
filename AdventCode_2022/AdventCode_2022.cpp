@@ -5,9 +5,11 @@
 #include "AdventParser.h"
 #include "CalorieCount.h"
 #include "RPS.h"
+#include "Rucksack.h"
 
 int main()
 {
+    //Day 1
     std::cout << "Parsing Elf Calories" << std::endl;
 
     CalorieCount::CalorieCountParser CalorieParser;
@@ -20,6 +22,7 @@ int main()
     CalorieParser.GetTopThreeCalories(First, Second, Third);
     std::cout << "Top three calories " << First << " " << Second << " " << Third << " Total " << First + Second + Third << std::endl;
 
+    //Day 2
     std::cout << "Hosting Rock Paper Scissors Tournament" << std::endl;
 
     ElfRPS::RPSParser RPS;
@@ -33,6 +36,17 @@ int main()
     AdventParser::Parse("InputFiles\\RPSTournament.txt", RPS);
 
     std::cout << "Tournament outcome with correct directions. Score: " << RPS.GetScore() << std::endl;
+
+    //Day 3
+    std::cout << "Getting the rucksack priorities" << std::endl;
+
+    Rucksack::RucksackParser Rucksacks;
+
+    AdventParser::Parse("InputFiles\\Rucksacks.txt", Rucksacks);
+
+    std::cout << "Sum of priorities " << Rucksacks.GetSumOfPriorities() << std::endl;
+
+    std::cout << "Sum of badge priorities " << Rucksacks.GetSumOfBadgePriorities() << std::endl;
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
