@@ -6,6 +6,7 @@
 #include "CalorieCount.h"
 #include "RPS.h"
 #include "Rucksack.h"
+#include "Crates.h"
 
 int main()
 {
@@ -47,6 +48,20 @@ int main()
     std::cout << "Sum of priorities " << Rucksacks.GetSumOfPriorities() << std::endl;
 
     std::cout << "Sum of badge priorities " << Rucksacks.GetSumOfBadgePriorities() << std::endl;
+
+    //Day 5
+    std::cout << "Reorganizing crates for unloaded from the ship" << std::endl;
+
+    Crates::CratesParser Crates;
+
+    AdventParser::Parse("InputFiles\\Crates.txt", Crates);
+
+    std::cout << "The top line of reorganized crates " << Crates.GetTopLine() << std::endl;
+
+    Crates.SetMoveType(Crates::MoveType2);
+    AdventParser::Parse("InputFiles\\Crates.txt", Crates);
+
+    std::cout << "After noticing the crane is model 9001 the new order is " << Crates.GetTopLine() << std::endl;
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu

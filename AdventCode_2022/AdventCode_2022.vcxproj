@@ -142,12 +142,14 @@
     <ClCompile Include="AdventCode_2022.cpp" />
     <ClCompile Include="AdventParser.cpp" />
     <ClCompile Include="CalorieCount.cpp" />
+    <ClCompile Include="Crates.cpp" />
     <ClCompile Include="RPS.cpp" />
     <ClCompile Include="Rucksack.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AdventParser.h" />
     <ClInclude Include="CalorieCount.h" />
+    <ClInclude Include="Crates.h" />
     <ClInclude Include="RPS.h" />
     <ClInclude Include="Rucksack.h" />
   </ItemGroup>
