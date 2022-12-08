@@ -10,6 +10,7 @@
 #include "Crates.h"
 #include "SignalDevice.h"
 #include "DirectoryCrawler.h"
+#include "Trees.h"
 
 int main()
 {
@@ -95,7 +96,18 @@ int main()
 
     std::cout << "Found " << DirectoryCrawler.GetTotalUnder100k() << " total bytes of directories up to 100000" << std::endl;
 
-    std::cout << DirectoryCrawler.GetSmallestToDelete() << std::endl;
+    std::cout << "The smallest directory to delete to make space was " << DirectoryCrawler.GetSmallestToDelete() << std::endl;
+
+    //Day 8
+    std::cout << "Checking for Tree Cover" << std::endl;
+
+    Trees::TreeParser Trees;
+
+    AdventParser::Parse("InputFiles\\TreeHeights.txt", Trees);
+
+    std::cout << "Found " << Trees.GetNumTreesVisible() << " visible from outside the forest" << std::endl;
+
+    std::cout << "The highest possible \"scenic score\" found was " << Trees.GetHighestScenicScore() << std::endl;
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu

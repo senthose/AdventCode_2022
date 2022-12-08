@@ -148,6 +148,7 @@
     <ClCompile Include="RPS.cpp" />
     <ClCompile Include="Rucksack.cpp" />
     <ClCompile Include="SignalDevice.cpp" />
+    <ClCompile Include="Trees.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AdventParser.h" />
@@ -158,6 +159,7 @@
     <ClInclude Include="RPS.h" />
     <ClInclude Include="Rucksack.h" />
     <ClInclude Include="SignalDevice.h" />
+    <ClInclude Include="Trees.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
