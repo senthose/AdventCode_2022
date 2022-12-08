@@ -9,6 +9,7 @@
 #include "ClearingSpace.h"
 #include "Crates.h"
 #include "SignalDevice.h"
+#include "DirectoryCrawler.h"
 
 int main()
 {
@@ -84,6 +85,17 @@ int main()
     std::cout << "Found the start of the buffer at index " << SignalDevice.GetStartOfBuffer() << std::endl;
 
     std::cout << "Found the /real/ start of the buffer at index " << SignalDevice.GetStartOfRealBuffer() << std::endl;
+
+    //Day 7
+    std::cout << "Crawling the communicator files..." << std::endl;
+
+    DirectoryCrawler::DirectoryCrawlerParser DirectoryCrawler;
+
+    AdventParser::Parse("InputFiles\\CommunicatorCommands.txt", DirectoryCrawler);
+
+    std::cout << "Found " << DirectoryCrawler.GetTotalUnder100k() << " total bytes of directories up to 100000" << std::endl;
+
+    std::cout << DirectoryCrawler.GetSmallestToDelete() << std::endl;
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
