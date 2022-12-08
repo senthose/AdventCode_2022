@@ -6,6 +6,7 @@
 #include "CalorieCount.h"
 #include "RPS.h"
 #include "Rucksack.h"
+#include "ClearingSpace.h"
 
 int main()
 {
@@ -47,6 +48,15 @@ int main()
     std::cout << "Sum of priorities " << Rucksacks.GetSumOfPriorities() << std::endl;
 
     std::cout << "Sum of badge priorities " << Rucksacks.GetSumOfBadgePriorities() << std::endl;
+
+    //Day 4
+    std::cout << "Optimizing clearing space" << std::endl;
+
+    Clearing::ClearingSpaceParser ClearingParser;
+
+    AdventParser::Parse("InputFiles\\ElfCleanupPairs.txt", ClearingParser);
+
+    std::cout << "Found " << ClearingParser.GetNumOverlaps() << " overlaps and " << ClearingParser.GetNumPartialOverlaps() << " partial overlaps" << std::endl;
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu

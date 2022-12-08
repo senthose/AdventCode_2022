@@ -47,14 +47,14 @@ RucksackContents::RucksackContents(const std::string& inItems)
 
 	if (priorityValue > 25)
 	{
-		SharedItem = 'A' + (priorityValue - 26);
+		SharedItem = static_cast<char>( 'A' + (priorityValue - 26));
 	}
 	else
 	{
-		SharedItem = 'a' + priorityValue;
+		SharedItem = static_cast<char>('a' + priorityValue);
 	}
 
-	Priority = priorityValue + 1;
+	Priority = static_cast<int>(priorityValue + 1);
 }
 
 RucksackGroup::RucksackGroup(const TripleRucksack& inRucksacks)
@@ -69,14 +69,14 @@ RucksackGroup::RucksackGroup(const TripleRucksack& inRucksacks)
 
 	if (priorityValue > 25)
 	{
-		SharedBadge = 'A' + (priorityValue - 26);
+		SharedBadge = static_cast<char>('A' + (priorityValue - 26));
 	}
 	else
 	{
-		SharedBadge = 'a' + priorityValue;
+		SharedBadge = static_cast<char>('a' + priorityValue);
 	}
 
-	Priority = priorityValue + 1;
+	Priority = static_cast<int>(priorityValue + 1);
 }
 
 RucksackParser::RucksackParser()
