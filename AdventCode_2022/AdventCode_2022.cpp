@@ -7,6 +7,8 @@
 #include "RPS.h"
 #include "Rucksack.h"
 #include "ClearingSpace.h"
+#include "Crates.h"
+#include "SignalDevice.h"
 
 int main()
 {
@@ -57,6 +59,31 @@ int main()
     AdventParser::Parse("InputFiles\\ElfCleanupPairs.txt", ClearingParser);
 
     std::cout << "Found " << ClearingParser.GetNumOverlaps() << " overlaps and " << ClearingParser.GetNumPartialOverlaps() << " partial overlaps" << std::endl;
+
+    //Day 5
+    std::cout << "Reorganizing crates for unloaded from the ship" << std::endl;
+
+    Crates::CratesParser Crates;
+
+    AdventParser::Parse("InputFiles\\Crates.txt", Crates);
+
+    std::cout << "The top line of reorganized crates " << Crates.GetTopLine() << std::endl;
+
+    Crates.SetMoveType(Crates::MoveType2);
+    AdventParser::Parse("InputFiles\\Crates.txt", Crates);
+
+    std::cout << "After noticing the crane is model 9001 the new order is " << Crates.GetTopLine() << std::endl;
+    
+    //Day 6
+    std::cout << "Attempting to find the start of the signal device..." << std::endl;
+
+    SignalDevice::SignalDeviceParser SignalDevice;
+
+    AdventParser::Parse("InputFiles\\DeviceSignal.txt", SignalDevice);
+
+    std::cout << "Found the start of the buffer at index " << SignalDevice.GetStartOfBuffer() << std::endl;
+
+    std::cout << "Found the /real/ start of the buffer at index " << SignalDevice.GetStartOfRealBuffer() << std::endl;
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
