@@ -45,6 +45,9 @@
     <ClCompile Include="Trees.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Rope.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CalorieCount.h">
@@ -72,6 +75,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Trees.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Rope.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

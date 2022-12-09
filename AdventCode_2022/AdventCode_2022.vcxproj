@@ -145,6 +145,7 @@
     <ClCompile Include="ClearingSpace.cpp" />
     <ClCompile Include="Crates.cpp" />
     <ClCompile Include="DirectoryCrawler.cpp" />
+    <ClCompile Include="Rope.cpp" />
     <ClCompile Include="RPS.cpp" />
     <ClCompile Include="Rucksack.cpp" />
     <ClCompile Include="SignalDevice.cpp" />
@@ -156,6 +157,7 @@
     <ClInclude Include="ClearingSpace.h" />
     <ClInclude Include="Crates.h" />
     <ClInclude Include="DirectoryCrawler.h" />
+    <ClInclude Include="Rope.h" />
     <ClInclude Include="RPS.h" />
     <ClInclude Include="Rucksack.h" />
     <ClInclude Include="SignalDevice.h" />

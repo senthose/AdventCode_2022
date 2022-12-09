@@ -181,12 +181,12 @@ void TreeParser::ParseLine(const int inLineNumber, const std::string& inLine)
 		Trees.SetSize(sideLength, sideLength);
 	}
 
-	size_t yIndex = inLineNumber - 1;
+	size_t yIndex = static_cast<size_t>(inLineNumber) - 1;
 	for (size_t i = 0; i < sideLength; ++i)
 	{
 		const char heightChar = inLine[i];
 
-		size_t treeHeight = heightChar - '0';
+		size_t treeHeight = static_cast<size_t>(heightChar) - '0';
 
 		Trees.AddTree(i, yIndex, treeHeight);
 	}

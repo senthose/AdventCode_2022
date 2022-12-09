@@ -11,6 +11,7 @@
 #include "SignalDevice.h"
 #include "DirectoryCrawler.h"
 #include "Trees.h"
+#include "Rope.h"
 
 int main()
 {
@@ -108,6 +109,15 @@ int main()
     std::cout << "Found " << Trees.GetNumTreesVisible() << " visible from outside the forest" << std::endl;
 
     std::cout << "The highest possible \"scenic score\" found was " << Trees.GetHighestScenicScore() << std::endl;
+
+    //Day 9
+    std::cout << "Distracting self by running rope simulation " << std::endl;
+
+    Rope::RopeParser Rope;
+
+    AdventParser::Parse("InputFiles\\RopeMoves.txt", Rope);
+
+    std::cout << "The tail moved through " << Rope.GetNumTailSpaces() << " spaces " << std::endl;
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
