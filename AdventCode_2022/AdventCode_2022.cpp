@@ -12,6 +12,7 @@
 #include "DirectoryCrawler.h"
 #include "Trees.h"
 #include "Rope.h"
+#include "DeviceCPU.h"
 
 int main()
 {
@@ -120,6 +121,19 @@ int main()
     std::cout << "The tail moved through " << Rope.GetNumTailSpaces(1) << " spaces " << std::endl;
 
     std::cout << "The end of the longer rope moved through " << Rope.GetNumTailSpaces(9) << " spaces " << std::endl;
+
+    //Day 10
+    std::cout << "Attempting to decode the video signal from the device" << std::endl;
+
+    DeviceCPU::Parser CPUParser;
+
+    AdventParser::Parse("InputFiles\\DeviceInstructions.txt", CPUParser);
+
+    std::cout << "Commulative signal strength: " << CPUParser.GetSignalSum() << std::endl;
+
+    std::cout << "Decoding the stream of instructions: " << std::endl;
+    
+    std::cout << CPUParser.GetDeviceScreen() << std::endl;
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
