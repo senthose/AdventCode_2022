@@ -2,6 +2,21 @@
 
 using namespace Rope;
 
+int Clamp(int inValue, int min, int max)
+{
+	if (inValue < min)
+	{
+		return min;
+	}
+
+	if (inValue > max)
+	{
+		return max;
+	}
+
+	return inValue;
+}
+
 MoveDirection GetDirectionFromChar(const char inChar)
 {
 	switch (inChar)
@@ -45,212 +60,176 @@ MoveDirection GetOppositDirection(MoveDirection inDirection)
 	}
 }
 
-RopeNode::RopeNode()
-	:Directions()
+void MovePoint(MoveDirection inDirection, int& outX, int& outY)
 {
-	for (size_t i = 0; i < static_cast<size_t>(MoveDirection::Size); ++i)
+	switch (inDirection)
 	{
-		Directions[i] = nullptr;
+	case MoveDirection::North:
+		--outY;
+		break;
+	case MoveDirection::South:
+		++outY;
+		break;
+	case MoveDirection::East:
+		++outX;
+		break;
+	case MoveDirection::West:
+		--outX;
+		break;
+	default:
+		break;
 	}
 }
 
-RopeNode* RopeNode::GetNode(MoveDirection inDirection)
+void MovePoint(MoveDirection inDirection, RopePoint& outPoint)
 {
-	return Directions[static_cast<size_t>(inDirection)];
+	MovePoint(inDirection, outPoint.X, outPoint.Y);
 }
 
-const RopeNode* RopeNode::GetNode(MoveDirection inDirection) const
+RopeNode& GetRopeNode(RopeVector2D& inGrid, int inHalfWidth, int x, int y)
 {
-	return Directions[static_cast<size_t>(inDirection)];
+	return inGrid[static_cast<size_t>(inHalfWidth) + x][static_cast<size_t>(inHalfWidth) + y];
 }
 
-void RopeNode::SetNode(MoveDirection inDirection, RopeNode* inNode)
+RopeNode& GetRopeNode(RopeVector2D& inGrid, int inHalfWidth, const RopePoint& inPoint)
 {
-	Directions[static_cast<size_t>(inDirection)] = inNode;
+	return GetRopeNode(inGrid, inHalfWidth, inPoint.X, inPoint.Y);
+}
+
+void RopeNode::SetVisited(size_t inRopeIndex)
+{
+	VisitBits.set(inRopeIndex);
+}
+
+bool RopeNode::WasVisited(size_t inRopeIndex) const
+{
+	return VisitBits.test(inRopeIndex);
 }
 
 RopeMap::RopeMap()
-	:Nodes()
-	,HeadPosition(nullptr)
-	,TailPosition(nullptr)
-	,StartPosition(nullptr)
+	:RopeGrid()
+	,RopePoints()
+	,HalfWidth(0)
 {
-	RopeNode* StartNode = CreateNode(MoveDirection::Size, nullptr);
+	SetGridSize(50);
 
-	StartNode->TailEntered = true;
-	StartPosition = StartNode;
-	HeadPosition = StartNode;
-	TailPosition = StartNode;
-}
+	RopeNode& node = GetRopeNode(RopeGrid, HalfWidth, 0, 0);
 
-RopeNode* RopeMap::MakeNode()
-{
-	Nodes.emplace_front();
-	RopeNode* newNode = &Nodes.front();
-	return newNode;
-}
-
-RopeNode* RopeMap::CreateNode(MoveDirection fromDirection, RopeNode* inAdjacentNode)
-{
-	RopeNode* newNode = MakeNode();
-
-	if (fromDirection != MoveDirection::Size)
+	for (int i = 0; i < NumRopeSegments; ++i)
 	{
-		MoveDirection oppositeDirection = GetOppositDirection(fromDirection);
-
-		newNode->SetNode(oppositeDirection, inAdjacentNode);
-
-		switch (oppositeDirection)
-		{
-		case Rope::MoveDirection::North:
-			newNode->SetNode(MoveDirection::NorthEast, inAdjacentNode->GetNode(MoveDirection::SouthEast));
-			newNode->SetNode(MoveDirection::NorthWest, inAdjacentNode->GetNode(MoveDirection::SouthWest));
-		case Rope::MoveDirection::South:
-			newNode->SetNode(MoveDirection::SouthEast, inAdjacentNode->GetNode(MoveDirection::NorthEast));
-			newNode->SetNode(MoveDirection::SouthWest, inAdjacentNode->GetNode(MoveDirection::NorthWest));
-		case Rope::MoveDirection::East:
-			newNode->SetNode(MoveDirection::NorthEast, inAdjacentNode->GetNode(MoveDirection::NorthWest));
-			newNode->SetNode(MoveDirection::SouthEast, inAdjacentNode->GetNode(MoveDirection::SouthWest));
-		case Rope::MoveDirection::West:
-			newNode->SetNode(MoveDirection::NorthWest, inAdjacentNode->GetNode(MoveDirection::NorthEast));
-			newNode->SetNode(MoveDirection::SouthWest, inAdjacentNode->GetNode(MoveDirection::SouthEast));
-		case Rope::MoveDirection::NorthEast:
-			break;
-		case Rope::MoveDirection::NorthWest:
-			break;
-		case Rope::MoveDirection::SouthEast:
-			break;
-		case Rope::MoveDirection::SouthWest:
-			break;
-		}
+		node.SetVisited(i);
 	}
-
-	for (size_t i = 0; i < static_cast<size_t>(MoveDirection::Size); ++i)
-	{
-		if (newNode->Directions[i] == nullptr)
-		{
-			newNode->Directions[i] = MakeNode();
-		}
-	}
-
-	for (size_t i = 0; i < static_cast<size_t>(MoveDirection::Size); ++i)
-	{
-		MoveDirection direction = static_cast<MoveDirection>(i);
-		RopeNode* node = newNode->GetNode(direction);
-
-		switch (direction)
-		{
-		case Rope::MoveDirection::North:
-			node->SetNode(MoveDirection::South, newNode);
-			node->SetNode(MoveDirection::East, newNode->GetNode(MoveDirection::NorthEast));
-			node->SetNode(MoveDirection::West, newNode->GetNode(MoveDirection::NorthWest));
-			node->SetNode(MoveDirection::SouthEast, newNode->GetNode(MoveDirection::East));
-			node->SetNode(MoveDirection::SouthWest, newNode->GetNode(MoveDirection::West));
-			break;
-		case Rope::MoveDirection::South:
-			node->SetNode(MoveDirection::North, newNode);
-			node->SetNode(MoveDirection::East, newNode->GetNode(MoveDirection::SouthEast));
-			node->SetNode(MoveDirection::West, newNode->GetNode(MoveDirection::SouthWest));
-			node->SetNode(MoveDirection::NorthEast, newNode->GetNode(MoveDirection::East));
-			node->SetNode(MoveDirection::NorthWest, newNode->GetNode(MoveDirection::West));
-			break;
-		case Rope::MoveDirection::East:
-			node->SetNode(MoveDirection::West, newNode);
-			node->SetNode(MoveDirection::North, newNode->GetNode(MoveDirection::NorthEast));
-			node->SetNode(MoveDirection::South, newNode->GetNode(MoveDirection::SouthEast));
-			node->SetNode(MoveDirection::NorthWest, newNode->GetNode(MoveDirection::North));
-			node->SetNode(MoveDirection::SouthWest, newNode->GetNode(MoveDirection::South));
-			break;
-		case Rope::MoveDirection::West:
-			node->SetNode(MoveDirection::East, newNode);
-			node->SetNode(MoveDirection::North, newNode->GetNode(MoveDirection::NorthWest));
-			node->SetNode(MoveDirection::South, newNode->GetNode(MoveDirection::SouthWest));
-			node->SetNode(MoveDirection::NorthEast, newNode->GetNode(MoveDirection::North));
-			node->SetNode(MoveDirection::SouthEast, newNode->GetNode(MoveDirection::South));
-			break;
-		case Rope::MoveDirection::NorthEast:
-			node->SetNode(MoveDirection::SouthWest, newNode);
-			node->SetNode(MoveDirection::West, newNode->GetNode(MoveDirection::North));
-			node->SetNode(MoveDirection::South, newNode->GetNode(MoveDirection::East));
-			break;
-		case Rope::MoveDirection::NorthWest:
-			node->SetNode(MoveDirection::SouthEast, newNode);
-			node->SetNode(MoveDirection::East, newNode->GetNode(MoveDirection::North));
-			node->SetNode(MoveDirection::South, newNode->GetNode(MoveDirection::West));
-			break;
-		case Rope::MoveDirection::SouthEast:
-			node->SetNode(MoveDirection::NorthWest, newNode);
-			node->SetNode(MoveDirection::North, newNode->GetNode(MoveDirection::East));
-			node->SetNode(MoveDirection::West, newNode->GetNode(MoveDirection::South));
-			break;
-		case Rope::MoveDirection::SouthWest:
-			node->SetNode(MoveDirection::NorthEast, newNode);
-			node->SetNode(MoveDirection::North, newNode->GetNode(MoveDirection::West));
-			node->SetNode(MoveDirection::East, newNode->GetNode(MoveDirection::South));
-			break;
-		case Rope::MoveDirection::Size:
-			break;
-		default:
-			break;
-		}
-	}
-	
-
-	return newNode;
-}
-
-RopeNode* RopeMap::GetNodeInDirection(MoveDirection inDirection, RopeNode* inCurrentNode)
-{
-	RopeNode* node = inCurrentNode->GetNode(inDirection);
-
-	if (node == nullptr)
-	{
-		node = CreateNode(inDirection, inCurrentNode);
-	}
-
-	return node;
 }
 
 void RopeMap::MoveHead(MoveDirection inDirection)
 {
-	RopeNode* oldHeadPosition = HeadPosition;
-	RopeNode* newHeadPosition = GetNodeInDirection(inDirection, HeadPosition);
+	RopePoint& headPoint = RopePoints[0];
 
-	HeadPosition = newHeadPosition;
-
-	if (TailPosition != HeadPosition)
+	MovePoint(inDirection, headPoint);
+	if (!IsValidCoord(headPoint))
 	{
-		bool tailAdjacent = false;
+		SetGridSize(HalfWidth * 2);
+	}
 
-		for (RopeNode* node : HeadPosition->Directions)
+	GetRopeNode(RopeGrid, HalfWidth, headPoint).SetVisited(0);
+
+	bool lastSegmentMoved = true;
+	for (size_t i = 1; i < NumRopeSegments; ++i)
+	{
+		if (!lastSegmentMoved)
 		{
-			if (node == TailPosition)
+			break;
+		}
+
+		const RopePoint& lastSegment = RopePoints[i - 1];
+		RopePoint& tailSegment = RopePoints[i];
+		bool isTailClose = false;
+		for (int x = -1; x <= 1; ++x)
+		{
+			int checkX = lastSegment.X + x;
+			for (int y = -1; y <= 1; ++y)
 			{
-				tailAdjacent = true;
-				break;
+				int checkY = lastSegment.Y + y;
+
+				if (checkX == tailSegment.X && checkY == tailSegment.Y)
+				{
+					isTailClose = true;
+					break;
+				}
 			}
 		}
 
-		if (!tailAdjacent)
+		if (!isTailClose)
 		{
-			TailPosition = oldHeadPosition;
-			TailPosition->TailEntered = true;
+			int xDif = lastSegment.X - tailSegment.X;
+			int yDif = lastSegment.Y - tailSegment.Y;
+
+			xDif = Clamp(xDif, -1, 1);
+			yDif = Clamp(yDif, -1, 1);
+			
+			tailSegment.X += xDif;
+			tailSegment.Y += yDif;
+			
+			GetRopeNode(RopeGrid, HalfWidth, tailSegment).SetVisited(i);
+		}
+		else
+		{
+			lastSegmentMoved = false;
 		}
 	}
 }
 
-size_t RopeMap::GetNumTailSpaces() const
+size_t RopeMap::GetNumTailSpaces(size_t inTailIndex) const
 {
 	size_t numTailSpaces = 0;
-	for (const RopeNode& node : Nodes)
+	for (const RopeVector& gridColumn : RopeGrid)
 	{
-		if (node.TailEntered)
+		for (const RopeNode& node : gridColumn)
 		{
-			++numTailSpaces;
+			if (node.WasVisited(inTailIndex))
+			{
+				++numTailSpaces;
+			}
 		}
 	}
 
 	return numTailSpaces;
+}
+
+bool RopeMap::IsValidCoord(int x, int y) const 
+{
+	return (HalfWidth > std::abs(x)) && (HalfWidth > std::abs(y));
+}
+
+bool RopeMap::IsValidCoord(const RopePoint& inPoint) const
+{
+	return IsValidCoord(inPoint.X, inPoint.Y);
+}
+
+void RopeMap::SetGridSize(int newHalfWidth)
+{
+	if (HalfWidth < newHalfWidth)
+	{
+		int oldHalfWidth = HalfWidth;
+		HalfWidth = newHalfWidth;
+
+		RopeVector2D oldGrid = RopeGrid;
+
+		RopeGrid.clear();
+		RopeGrid.resize((static_cast<size_t>(HalfWidth) * 2) + 1);
+		for (RopeVector& gridColumn : RopeGrid)
+		{
+			gridColumn.resize((static_cast<size_t>(HalfWidth) * 2) + 1);
+		}
+
+		for (int i = -oldHalfWidth + 1; i < oldHalfWidth; ++i)
+		{
+			for (int j = -oldHalfWidth + 1; j < oldHalfWidth; ++j)
+			{
+				GetRopeNode(RopeGrid, HalfWidth, i, j) = GetRopeNode(oldGrid, oldHalfWidth, i, j);
+			}
+		}
+	}
 }
 
 RopeParser::RopeParser()
@@ -279,7 +258,7 @@ void RopeParser::OnEndParse()
 {
 }
 
-size_t RopeParser::GetNumTailSpaces() const
+size_t RopeParser::GetNumTailSpaces(size_t inTailIndex) const
 {
-	return Map.GetNumTailSpaces();
+	return Map.GetNumTailSpaces(inTailIndex);
 }

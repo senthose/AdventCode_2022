@@ -2,6 +2,7 @@
 
 #include "AdventParser.h"
 #include <forward_list>
+#include <bitset>
 #include <array>
 
 namespace Rope {
@@ -17,22 +18,22 @@ namespace Rope {
 		Size,
 	};
 
-	struct RopeNode;
-
-	typedef std::array<RopeNode*, static_cast<size_t>(MoveDirection::Size)> RopeDirections;
+	const int NumRopeSegments = 10;
 
 	struct RopeNode {
-		RopeNode();
+		std::bitset<NumRopeSegments> VisitBits;
 
-		bool TailEntered = false;
-
-		RopeDirections Directions;
-
-		RopeNode* GetNode(MoveDirection inDirection);
-		const RopeNode* GetNode(MoveDirection inDirection) const;
-
-		void SetNode(MoveDirection inDirection, RopeNode* inNode);
+		void SetVisited(size_t inRopeIndex);
+		bool WasVisited(size_t inRopeIndex) const;
 	};
+
+	struct RopePoint {
+		int X;
+		int Y;
+	};
+	
+	typedef std::vector<RopeNode> RopeVector;
+	typedef std::vector<RopeVector> RopeVector2D;
 
 	class RopeMap {
 	public:
@@ -40,18 +41,15 @@ namespace Rope {
 
 		void MoveHead(MoveDirection inDirection);
 
-		size_t GetNumTailSpaces() const;
-
+		size_t GetNumTailSpaces(size_t inTailIndex) const;
 	private:
-		RopeNode* MakeNode();
-		RopeNode* CreateNode(MoveDirection fromDirection, RopeNode* inAdjacentNode);
+		bool IsValidCoord(int x, int y) const;
+		bool IsValidCoord(const RopePoint& inPoint) const;
+		void SetGridSize(int newHalfWidth);
 
-		RopeNode* GetNodeInDirection(MoveDirection inDirection, RopeNode* inCurrentNode);
-
-		std::forward_list<RopeNode> Nodes;
-		RopeNode* HeadPosition;
-		RopeNode* TailPosition;
-		RopeNode* StartPosition;
+		RopeVector2D RopeGrid;
+		std::array<RopePoint, NumRopeSegments> RopePoints;
+		int HalfWidth;
 	};
 
 	class RopeParser : public AdventParser::ParserInterface {
@@ -62,7 +60,7 @@ namespace Rope {
 		void ParseLine(const int inLineNumber, const std::string& inLine) override;
 		void OnEndParse() override;
 
-		size_t GetNumTailSpaces() const;
+		size_t GetNumTailSpaces(size_t inTailIndex) const;
 	private:
 		RopeMap Map;
 	};

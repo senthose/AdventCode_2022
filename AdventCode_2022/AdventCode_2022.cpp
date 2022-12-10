@@ -117,7 +117,9 @@ int main()
 
     AdventParser::Parse("InputFiles\\RopeMoves.txt", Rope);
 
-    std::cout << "The tail moved through " << Rope.GetNumTailSpaces() << " spaces " << std::endl;
+    std::cout << "The tail moved through " << Rope.GetNumTailSpaces(1) << " spaces " << std::endl;
+
+    std::cout << "The end of the longer rope moved through " << Rope.GetNumTailSpaces(9) << " spaces " << std::endl;
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
