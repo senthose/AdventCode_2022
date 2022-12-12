@@ -54,6 +54,9 @@
     <ClCompile Include="Monkey.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="HillPathfinding.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CalorieCount.h">
@@ -90,6 +93,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Monkey.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="HillPathfinding.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

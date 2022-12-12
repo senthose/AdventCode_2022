@@ -1,6 +1,8 @@
 #pragma once
 #include <string>
 #include <vector>
+#include <functional>
+#include <array>
 
 namespace AdventParser {
 	class ParserInterface {
@@ -19,4 +21,8 @@ namespace AdventParser {
 	VectorString SplitString(const std::string& inString, const char inDelimiter);
 
 	void RemoveCharFromString(std::string& inString, const char inCharToRemove);
+
+	typedef std::function<void(void)> DayFunction;
+
+	typedef std::array<DayFunction, 25> AdventArray;
 }
