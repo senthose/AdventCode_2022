@@ -34,11 +34,25 @@ VectorString AdventParser::SplitString(const std::string& inString, const char i
 	{
 		if (inString[i] == inDelimiter)
 		{
-			splitStrings.push_back(inString.substr(lastIndex, i - lastIndex));
+			std::string subString = inString.substr(lastIndex, i - lastIndex);
+			if (!subString.empty())
+			{
+				splitStrings.push_back(inString.substr(lastIndex, i - lastIndex));
+			}
 			lastIndex = i + 1;
 		}
 	}
 	splitStrings.push_back(inString.substr(lastIndex));
 
 	return splitStrings;
+}
+
+void AdventParser::RemoveCharFromString(std::string& inString, const char inCharToRemove)
+{
+	size_t charIndex = inString.find(inCharToRemove);
+	while (charIndex != std::string::npos)
+	{
+		inString.erase(charIndex);
+		charIndex = inString.find(':');
+	}
 }

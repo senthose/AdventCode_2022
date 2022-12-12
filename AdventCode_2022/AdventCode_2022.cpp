@@ -13,6 +13,7 @@
 #include "Trees.h"
 #include "Rope.h"
 #include "DeviceCPU.h"
+#include "Monkey.h"
 
 int main()
 {
@@ -134,6 +135,24 @@ int main()
     std::cout << "Decoding the stream of instructions: " << std::endl;
     
     std::cout << CPUParser.GetDeviceScreen() << std::endl;
+
+    //Day 11
+    std::cout << "Chasing down some monkeys" << std::endl;
+
+    MonkeyBusiness::MonkeyParser Monkeys;
+    MonkeyBusiness::MonkeyParser MonkeysNotWorried;
+
+    AdventParser::Parse("InputFiles\\Monkeys.txt", Monkeys);
+
+    Monkeys.DoRounds(20);
+
+    std::cout << "After 20 rounds of monkey " << Monkeys.GetMonkeyBusinessValue() << std::endl;
+
+    AdventParser::Parse("InputFiles\\Monkeys.txt", MonkeysNotWorried);
+    MonkeysNotWorried.SetWorried(false);
+    MonkeysNotWorried.DoRounds(10000);
+
+    std::cout << "After 10000 rounds monkey business with more worry " << MonkeysNotWorried.GetMonkeyBusinessValue() << std::endl;
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu

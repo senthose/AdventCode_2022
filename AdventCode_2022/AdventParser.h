@@ -17,4 +17,6 @@ namespace AdventParser {
 	typedef std::vector<std::string> VectorString;
 
 	VectorString SplitString(const std::string& inString, const char inDelimiter);
+
+	void RemoveCharFromString(std::string& inString, const char inCharToRemove);
 }
