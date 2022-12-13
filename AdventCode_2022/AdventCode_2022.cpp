@@ -182,6 +182,10 @@ void Day12()
 	Hill::HillParser Hills;
 
 	AdventParser::Parse("InputFiles\\HillMap.txt", Hills);
+
+	std::cout << "Shortest path length to top of hill: " << Hills.GetShortestPath() << std::endl;
+
+	std::cout << "Shortst scenic path length: " << Hills.GetShortestScenicPath() << std::endl;
 }
 
 int main()

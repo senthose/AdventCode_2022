@@ -45,14 +45,22 @@ namespace Hill {
 		const HillNode& GetNode(const HillPoint& inPoint) const;
 
 		size_t GetShortestPathLength() const;
+		size_t GetShortestScenicPathLength() const;
 	private:
-		void MapPath();
+		void Reset();
+
+		bool FoundEnd() const;
+		void CheckNodes(HillNode* inNode, int inHeight, int inWidth, HillReferenceVector& outUnvisitedNodes);
+		void MapPath(HillNode* inStart);
+		void MapPaths();
 
 		void DebugDrawMap() const;
 
 		HillVector2D Map;
 		HillPoint StartPoint;
 		HillPoint EndPoint;
+		size_t ShortestPath;
+		size_t ShortestScenicPath;
 	};
 
 	class HillParser : public AdventParser::ParserInterface {
@@ -63,6 +71,8 @@ namespace Hill {
 		void ParseLine(const int inLineNumber, const std::string& inLine) override;
 		void OnEndParse() override;
 
+		size_t GetShortestPath() const;
+		size_t GetShortestScenicPath() const;
 	private:
 		HillMap Map;
 		StringVector MapData;
