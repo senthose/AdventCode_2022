@@ -15,6 +15,7 @@
 #include "DeviceCPU.h"
 #include "Monkey.h"
 #include "HillPathfinding.h"
+#include "DistressSignal.h"
 
 void Day1()
 {
@@ -200,13 +201,14 @@ int main()
 	adventDays[9] = Day10;
 	adventDays[10] = Day11;
 	adventDays[11] = Day12;
+	adventDays[12] = AdventParser::MakeFunction<Distress::DistressSignalParser>("InputFiles\\DistressSignal.txt");
 
     std::string inputBuffer;
 
     std::cout << "Enter day:";
 
     //std::cin >> inputBuffer;
-	inputBuffer = "12";
+	inputBuffer = "13";
 
     int inputDay = 0;
     bool validInput = false;

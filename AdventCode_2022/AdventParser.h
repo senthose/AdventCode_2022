@@ -25,4 +25,14 @@ namespace AdventParser {
 	typedef std::function<void(void)> DayFunction;
 
 	typedef std::array<DayFunction, 25> AdventArray;
+
+	template<class ParserT>
+	DayFunction MakeFunction(const std::string& inFilePath)
+	{
+		return [inFilePath]()
+		{
+			ParserT parser;
+			Parse(inFilePath.data(), parser);
+		};
+	}
 }

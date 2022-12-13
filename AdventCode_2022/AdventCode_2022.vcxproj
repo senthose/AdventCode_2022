@@ -147,6 +147,7 @@
     <ClCompile Include="Crates.cpp" />
     <ClCompile Include="DeviceCPU.cpp" />
     <ClCompile Include="DirectoryCrawler.cpp" />
+    <ClCompile Include="DistressSignal.cpp" />
     <ClCompile Include="HillPathfinding.cpp" />
     <ClCompile Include="Monkey.cpp" />
     <ClCompile Include="Rope.cpp" />
@@ -162,6 +163,7 @@
     <ClInclude Include="Crates.h" />
     <ClInclude Include="DeviceCPU.h" />
     <ClInclude Include="DirectoryCrawler.h" />
+    <ClInclude Include="DistressSignal.h" />
     <ClInclude Include="HillPathfinding.h" />
     <ClInclude Include="Monkey.h" />
     <ClInclude Include="Rope.h" />
