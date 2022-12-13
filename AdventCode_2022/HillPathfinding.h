@@ -3,6 +3,7 @@
 #include "AdventParser.h"
 
 #include <limits>
+#include <list>
 
 namespace Hill {
 	struct HillPoint {
@@ -17,8 +18,11 @@ namespace Hill {
 	const HillPoint RightOffset{ 1, 0 };
 	const HillPoint LeftOffset {-1, 0};
 
+	struct HillNode;
+
 	struct HillNode {
 		HillPoint Point;
+		const HillNode* Previous;
 		int DistanceFromStart = std::numeric_limits<int>::max();
 		bool Visited = false;
 		char Height;
@@ -30,7 +34,8 @@ namespace Hill {
 	typedef std::vector<HillNode> HillVector;
 	typedef std::vector<HillVector> HillVector2D;
 
-	typedef std::vector<HillNode*> HillReferenceVector;
+	typedef std::vector<HillNode*> HillReferenceList;
+	typedef std::list<const HillNode*> HillNodeList;
 	
 	typedef std::vector<std::string> StringVector;
 
@@ -50,7 +55,7 @@ namespace Hill {
 		void Reset();
 
 		bool FoundEnd() const;
-		void CheckNodes(HillNode* inNode, int inHeight, int inWidth, HillReferenceVector& outUnvisitedNodes);
+		void CheckNodes(HillNode* inNode, int inHeight, int inWidth, HillReferenceList& outUnvisitedNodes);
 		void MapPath(HillNode* inStart);
 		void MapPaths();
 

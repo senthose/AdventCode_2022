@@ -117,7 +117,7 @@ size_t HillMap::GetShortestScenicPathLength() const
 	return ShortestScenicPath;
 }
 
-void CheckNode(const HillNode& currentNode, HillNode& inNode, HillReferenceVector& outCheckedNodes)
+void CheckNode(const HillNode& currentNode, HillNode& inNode, HillReferenceList& outCheckedNodes)
 {
 	size_t startSize = outCheckedNodes.size();
 	if (!inNode.Visited)
@@ -128,6 +128,7 @@ void CheckNode(const HillNode& currentNode, HillNode& inNode, HillReferenceVecto
 			if (distance < inNode.DistanceFromStart)
 			{
 				inNode.DistanceFromStart = distance;
+				inNode.Previous = &currentNode;
 			}
 
 			outCheckedNodes.push_back(&inNode);
@@ -135,7 +136,7 @@ void CheckNode(const HillNode& currentNode, HillNode& inNode, HillReferenceVecto
 	}
 }
 
-void AddUnvisited(HillNode* inNode, HillReferenceVector& outUnvisitedNodes)
+void AddUnvisited(HillNode* inNode, HillReferenceList& outUnvisitedNodes)
 {
 	if (!inNode->Visited)
 	{
@@ -151,19 +152,27 @@ void AddUnvisited(HillNode* inNode, HillReferenceVector& outUnvisitedNodes)
 
 		if (!foundNode)
 		{
-			outUnvisitedNodes.push_back(inNode);
+			//Insertion sort.
+			auto findInsertionPoint = [inNode](const HillNode* inListNode) -> bool
+			{
+				return inListNode->DistanceFromStart > inNode->DistanceFromStart;
+			};
+
+			HillReferenceList::iterator it = std::find_if(outUnvisitedNodes.begin(), outUnvisitedNodes.end(), findInsertionPoint);
+
+			outUnvisitedNodes.insert(it, inNode);
 		}
 	}
 }
 
-void RemoveVisited(HillReferenceVector& outUnvistedNodes)
+void RemoveVisited(HillReferenceList& outUnvistedNodes)
 {
 	auto FindVisited = [](const HillNode* inNode)
 	{
 		return inNode->Visited;
 	};
 
-	HillReferenceVector::iterator it = std::find_if(outUnvistedNodes.begin(), outUnvistedNodes.end(), FindVisited);
+	HillReferenceList::iterator it = std::find_if(outUnvistedNodes.begin(), outUnvistedNodes.end(), FindVisited);
 
 	while (it != outUnvistedNodes.end())
 	{
@@ -186,6 +195,7 @@ void HillMap::Reset()
 		{
 			node.Visited = false;
 			node.DistanceFromStart = std::numeric_limits<int>::max();
+			node.Previous = nullptr;
 		}
 	}
 }
@@ -197,14 +207,14 @@ bool HillMap::FoundEnd() const
 	return endNode.Visited;
 }
 
-void HillMap::CheckNodes(HillNode* inNode, int inHeight, int inWidth, HillReferenceVector& outUnvisitedNodes)
+void HillMap::CheckNodes(HillNode* inNode, int inHeight, int inWidth, HillReferenceList& outUnvisitedNodes)
 {
 	if (FoundEnd())
 	{
 		return;
 	}
 
-	HillReferenceVector checkedNodes;
+	HillReferenceList checkedNodes;
 
 	const HillPoint& currentPoint = inNode->Point;
 
@@ -246,7 +256,7 @@ void HillMap::CheckNodes(HillNode* inNode, int inHeight, int inWidth, HillRefere
 	{
 		return;
 	}
-
+	
 	if (checkedNodes.size() > 0)
 	{
 		for (HillNode* node : checkedNodes)
@@ -268,7 +278,7 @@ void HillMap::MapPath(HillNode* inStartPoint)
 	startNode->DistanceFromStart = 0;
 	startNode->Visited = true;
 
-	HillReferenceVector unvistedNodes;
+	HillReferenceList unvistedNodes;
 
 	HillNode* currentNode = startNode;
 
@@ -280,9 +290,7 @@ void HillMap::MapPath(HillNode* inStartPoint)
 
 		if (unvistedNodes.size() > 0)
 		{
-			std::sort(unvistedNodes.begin(), unvistedNodes.end(), NodeSort);
-
-			currentNode = unvistedNodes[0];
+			currentNode = unvistedNodes.front();
 		}
 		else
 		{
@@ -323,13 +331,31 @@ void HillMap::DebugDrawMap() const
 	const int height = static_cast<int>(Map.front().size());
 	const int width = static_cast<int>(Map.size());
 
+	HillNodeList path;
+	const HillNode* pathPoint = &GetNode(EndPoint);
+
+	path.push_front(pathPoint);
+
+	while (pathPoint->Previous != nullptr)
+	{
+		path.push_front(pathPoint->Previous);
+
+		pathPoint = pathPoint->Previous;
+	}
+
 	for (int y = 0; y < height; ++y)
 	{
 		for (int x = 0; x < width; ++x)
 		{
 			const HillNode& node = Map[x][y];
 
-			if (node.Point.X == StartPoint.X && node.Point.Y == StartPoint.Y)
+			HillNodeList::iterator it = std::find(path.begin(), path.end(), &node);
+
+			if (it != path.end())
+			{
+				std::cout << '*';
+			}
+			else if (node.Point.X == StartPoint.X && node.Point.Y == StartPoint.Y)
 			{
 				std::cout << 'S';
 			}
