@@ -40,6 +40,8 @@ HillMap::HillMap()
 	:Map()
 	,StartPoint()
 	,EndPoint()
+	,ShortestPath()
+	,ShortestScenicPath()
 {
 }
 
@@ -91,7 +93,7 @@ void HillMap::Initialize(const StringVector& inMapData)
 			}
 		}
 
-		MapPath();
+		MapPaths();
 	}
 }
 
@@ -107,13 +109,17 @@ const HillNode& HillMap::GetNode(const HillPoint& inPoint) const
 
 size_t HillMap::GetShortestPathLength() const
 {
-	const HillNode& endNode = GetNode(EndPoint);
-
-	return endNode.DistanceFromStart;
+	return ShortestPath;
 }
 
-void CheckNode(const HillNode& currentNode, HillNode& inNode, HillReferenceVector& outCheckedNodes)
+size_t HillMap::GetShortestScenicPathLength() const
 {
+	return ShortestScenicPath;
+}
+
+void CheckNode(const HillNode& currentNode, HillNode& inNode, HillReferenceList& outCheckedNodes)
+{
+	size_t startSize = outCheckedNodes.size();
 	if (!inNode.Visited)
 	{
 		if (CanMoveTo(currentNode, inNode))
@@ -122,10 +128,57 @@ void CheckNode(const HillNode& currentNode, HillNode& inNode, HillReferenceVecto
 			if (distance < inNode.DistanceFromStart)
 			{
 				inNode.DistanceFromStart = distance;
+				inNode.Previous = &currentNode;
 			}
 
 			outCheckedNodes.push_back(&inNode);
 		}
+	}
+}
+
+void AddUnvisited(HillNode* inNode, HillReferenceList& outUnvisitedNodes)
+{
+	if (!inNode->Visited)
+	{
+		bool foundNode = false;
+		for (const HillNode* node : outUnvisitedNodes)
+		{
+			if (inNode == node)
+			{
+				foundNode = true;
+				break;
+			}
+		}
+
+		if (!foundNode)
+		{
+			//Insertion sort.
+			auto findInsertionPoint = [inNode](const HillNode* inListNode) -> bool
+			{
+				return inListNode->DistanceFromStart > inNode->DistanceFromStart;
+			};
+
+			HillReferenceList::iterator it = std::find_if(outUnvisitedNodes.begin(), outUnvisitedNodes.end(), findInsertionPoint);
+
+			outUnvisitedNodes.insert(it, inNode);
+		}
+	}
+}
+
+void RemoveVisited(HillReferenceList& outUnvistedNodes)
+{
+	auto FindVisited = [](const HillNode* inNode)
+	{
+		return inNode->Visited;
+	};
+
+	HillReferenceList::iterator it = std::find_if(outUnvistedNodes.begin(), outUnvistedNodes.end(), FindVisited);
+
+	while (it != outUnvistedNodes.end())
+	{
+		outUnvistedNodes.erase(it);
+
+		it = std::find_if(outUnvistedNodes.begin(), outUnvistedNodes.end(), FindVisited);
 	}
 }
 
@@ -134,70 +187,141 @@ bool NodeSort(const HillNode* A, const HillNode* B)
 	return A->DistanceFromStart < B->DistanceFromStart;
 }
 
-void HillMap::MapPath()
+void HillMap::Reset()
 {
+	for (HillVector& mapColumn : Map)
+	{
+		for (HillNode& node : mapColumn)
+		{
+			node.Visited = false;
+			node.DistanceFromStart = std::numeric_limits<int>::max();
+			node.Previous = nullptr;
+		}
+	}
+}
+
+bool HillMap::FoundEnd() const
+{
+	const HillNode& endNode = GetNode(EndPoint);
+
+	return endNode.Visited;
+}
+
+void HillMap::CheckNodes(HillNode* inNode, int inHeight, int inWidth, HillReferenceList& outUnvisitedNodes)
+{
+	if (FoundEnd())
+	{
+		return;
+	}
+
+	HillReferenceList checkedNodes;
+
+	const HillPoint& currentPoint = inNode->Point;
+
+	// Check Up
+	if (currentPoint.Y > 0)
+	{
+		HillNode& upNode = GetNode(currentPoint + UpOffset);
+
+		CheckNode(*inNode, upNode, checkedNodes);
+	}
+
+	//Check Down
+	if (currentPoint.Y < (inHeight - 1))
+	{
+		HillNode& downNode = GetNode(currentPoint + DownOffset);
+
+		CheckNode(*inNode, downNode, checkedNodes);
+	}
+
+	//Check Right
+	if (currentPoint.X < (inWidth - 1))
+	{
+		HillNode& rightNode = GetNode(currentPoint + RightOffset);
+
+		CheckNode(*inNode, rightNode, checkedNodes);
+	}
+
+	//Check Left
+	if (currentPoint.X > 0)
+	{
+		HillNode& leftNode = GetNode(currentPoint + LeftOffset);
+
+		CheckNode(*inNode, leftNode, checkedNodes);
+	}
+
+	inNode->Visited = true;
+
+	if (FoundEnd())
+	{
+		return;
+	}
+	
+	if (checkedNodes.size() > 0)
+	{
+		for (HillNode* node : checkedNodes)
+		{
+			AddUnvisited(node, outUnvisitedNodes);
+		}
+	}
+}
+
+void HillMap::MapPath(HillNode* inStartPoint)
+{
+	Reset();
+
 	const int height = static_cast<int>(Map.front().size());
 	const int width = static_cast<int>(Map.size());
 
-	HillNode* startNode = &GetNode(StartPoint);
-	HillNode* endNode = &GetNode(EndPoint);
+	HillNode* startNode = inStartPoint;
 
 	startNode->DistanceFromStart = 0;
 	startNode->Visited = true;
 
+	HillReferenceList unvistedNodes;
+
 	HillNode* currentNode = startNode;
 
-	HillReferenceVector checkedNodes;
-
-	while (currentNode != endNode)
+	while (!FoundEnd())
 	{
-		checkedNodes.clear();
-		const HillPoint& currentPoint = currentNode->Point;
+		CheckNodes(currentNode, height, width, unvistedNodes);
 
-		// Check Up
-		if (currentPoint.Y > 0)
+		RemoveVisited(unvistedNodes);
+
+		if (unvistedNodes.size() > 0)
 		{
-			HillNode& upNode = GetNode(currentPoint + UpOffset);
-
-			CheckNode(*currentNode, upNode, checkedNodes);
-		}
-
-		//Check Down
-		if (currentPoint.Y < (height - 1))
-		{
-			HillNode& downNode = GetNode(currentPoint + DownOffset);
-
-			CheckNode(*currentNode, downNode, checkedNodes);
-		}
-
-		//Check Right
-		if (currentPoint.X < (width - 1))
-		{
-			HillNode& rightNode = GetNode(currentPoint + RightOffset);
-
-			CheckNode(*currentNode, rightNode, checkedNodes);
-		}
-
-		//Check Left
-		if (currentPoint.X > 0)
-		{
-			HillNode& leftNode = GetNode(currentPoint + LeftOffset);
-
-			CheckNode(*currentNode, leftNode, checkedNodes);
-		}
-
-
-		currentNode->Visited = true;
-		if (checkedNodes.size() > 0)
-		{
-			std::sort(checkedNodes.begin(), checkedNodes.end(), NodeSort);
-
-			currentNode = checkedNodes[0];
+			currentNode = unvistedNodes.front();
 		}
 		else
 		{
-			DebugDrawMap();
 			break;
+		}
+	}
+}
+
+void HillMap::MapPaths()
+{
+	ShortestScenicPath = std::numeric_limits<size_t>::max();
+	const HillNode& endNode = GetNode(EndPoint);
+
+	for (HillVector& mapColumn : Map)
+	{
+		for (HillNode& node : mapColumn)
+		{
+			if (node.Height == 'a')
+			{
+				MapPath(&node);
+
+				if (endNode.DistanceFromStart < ShortestScenicPath)
+				{
+					ShortestScenicPath = endNode.DistanceFromStart;
+				}
+
+				if (node.Point.X == StartPoint.X && node.Point.Y == StartPoint.Y)
+				{
+					ShortestPath = endNode.DistanceFromStart;
+				}
+			}
 		}
 	}
 }
@@ -207,13 +331,31 @@ void HillMap::DebugDrawMap() const
 	const int height = static_cast<int>(Map.front().size());
 	const int width = static_cast<int>(Map.size());
 
+	HillNodeList path;
+	const HillNode* pathPoint = &GetNode(EndPoint);
+
+	path.push_front(pathPoint);
+
+	while (pathPoint->Previous != nullptr)
+	{
+		path.push_front(pathPoint->Previous);
+
+		pathPoint = pathPoint->Previous;
+	}
+
 	for (int y = 0; y < height; ++y)
 	{
 		for (int x = 0; x < width; ++x)
 		{
 			const HillNode& node = Map[x][y];
 
-			if (node.Point.X == StartPoint.X && node.Point.Y == StartPoint.Y)
+			HillNodeList::iterator it = std::find(path.begin(), path.end(), &node);
+
+			if (it != path.end())
+			{
+				std::cout << '*';
+			}
+			else if (node.Point.X == StartPoint.X && node.Point.Y == StartPoint.Y)
 			{
 				std::cout << 'S';
 			}
@@ -253,4 +395,14 @@ void HillParser::ParseLine(const int inLineNumber, const std::string& inLine)
 void HillParser::OnEndParse()
 {
 	Map.Initialize(MapData);
+}
+
+size_t HillParser::GetShortestPath() const
+{
+	return Map.GetShortestPathLength();
+}
+
+size_t HillParser::GetShortestScenicPath() const
+{
+	return Map.GetShortestScenicPathLength();
 }

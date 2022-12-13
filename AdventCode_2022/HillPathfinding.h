@@ -3,6 +3,7 @@
 #include "AdventParser.h"
 
 #include <limits>
+#include <list>
 
 namespace Hill {
 	struct HillPoint {
@@ -17,8 +18,11 @@ namespace Hill {
 	const HillPoint RightOffset{ 1, 0 };
 	const HillPoint LeftOffset {-1, 0};
 
+	struct HillNode;
+
 	struct HillNode {
 		HillPoint Point;
+		const HillNode* Previous;
 		int DistanceFromStart = std::numeric_limits<int>::max();
 		bool Visited = false;
 		char Height;
@@ -30,7 +34,8 @@ namespace Hill {
 	typedef std::vector<HillNode> HillVector;
 	typedef std::vector<HillVector> HillVector2D;
 
-	typedef std::vector<HillNode*> HillReferenceVector;
+	typedef std::vector<HillNode*> HillReferenceList;
+	typedef std::list<const HillNode*> HillNodeList;
 	
 	typedef std::vector<std::string> StringVector;
 
@@ -45,14 +50,22 @@ namespace Hill {
 		const HillNode& GetNode(const HillPoint& inPoint) const;
 
 		size_t GetShortestPathLength() const;
+		size_t GetShortestScenicPathLength() const;
 	private:
-		void MapPath();
+		void Reset();
+
+		bool FoundEnd() const;
+		void CheckNodes(HillNode* inNode, int inHeight, int inWidth, HillReferenceList& outUnvisitedNodes);
+		void MapPath(HillNode* inStart);
+		void MapPaths();
 
 		void DebugDrawMap() const;
 
 		HillVector2D Map;
 		HillPoint StartPoint;
 		HillPoint EndPoint;
+		size_t ShortestPath;
+		size_t ShortestScenicPath;
 	};
 
 	class HillParser : public AdventParser::ParserInterface {
@@ -63,6 +76,8 @@ namespace Hill {
 		void ParseLine(const int inLineNumber, const std::string& inLine) override;
 		void OnEndParse() override;
 
+		size_t GetShortestPath() const;
+		size_t GetShortestScenicPath() const;
 	private:
 		HillMap Map;
 		StringVector MapData;
