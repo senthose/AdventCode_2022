@@ -153,6 +153,7 @@
     <ClCompile Include="Rope.cpp" />
     <ClCompile Include="RPS.cpp" />
     <ClCompile Include="Rucksack.cpp" />
+    <ClCompile Include="Sand.cpp" />
     <ClCompile Include="SignalDevice.cpp" />
     <ClCompile Include="Trees.cpp" />
   </ItemGroup>
@@ -169,6 +170,7 @@
     <ClInclude Include="Rope.h" />
     <ClInclude Include="RPS.h" />
     <ClInclude Include="Rucksack.h" />
+    <ClInclude Include="Sand.h" />
     <ClInclude Include="SignalDevice.h" />
     <ClInclude Include="Trees.h" />
   </ItemGroup>

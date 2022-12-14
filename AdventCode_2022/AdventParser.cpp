@@ -52,7 +52,7 @@ void AdventParser::RemoveCharFromString(std::string& inString, const char inChar
 	size_t charIndex = inString.find(inCharToRemove);
 	while (charIndex != std::string::npos)
 	{
-		inString.erase(charIndex);
-		charIndex = inString.find(':');
+		inString.erase(charIndex, 1);
+		charIndex = inString.find(inCharToRemove);
 	}
 }
