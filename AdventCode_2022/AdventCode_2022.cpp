@@ -17,6 +17,7 @@
 #include "HillPathfinding.h"
 #include "DistressSignal.h"
 #include "Sand.h"
+#include "Beacons.h"
 
 void Day1()
 {
@@ -208,13 +209,14 @@ int main()
 	adventDays[11] = Day12;
 	adventDays[12] = AdventParser::MakeFunction<Distress::DistressSignalParser>("InputFiles\\DistressSignal.txt");
 	adventDays[13] = AdventParser::MakeFunction<Sand::CaveSandParser>("InputFiles\\Cave.txt");
+	adventDays[14] = AdventParser::MakeFunction<Beacon::Parser>("InputFiles\\Sensors.txt");
 
     std::string inputBuffer;
 
     std::cout << "Enter day:";
 
     //std::cin >> inputBuffer;
-	inputBuffer = "14";
+	inputBuffer = "15";
 
     int inputDay = 0;
     bool validInput = false;

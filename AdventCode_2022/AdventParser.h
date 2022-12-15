@@ -21,6 +21,7 @@ namespace AdventParser {
 	VectorString SplitString(const std::string& inString, const char inDelimiter);
 
 	void RemoveCharFromString(std::string& inString, const char inCharToRemove);
+	void RemoveNonDigits(std::string& inString);
 
 	typedef std::function<void(void)> DayFunction;
 

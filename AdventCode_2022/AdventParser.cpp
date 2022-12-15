@@ -56,3 +56,20 @@ void AdventParser::RemoveCharFromString(std::string& inString, const char inChar
 		charIndex = inString.find(inCharToRemove);
 	}
 }
+
+void AdventParser::RemoveNonDigits(std::string& inString)
+{
+	auto notIsDigit = [](const char inChar) -> bool
+	{
+		if (inChar == '+' || inChar == '-')
+		{
+			return false;
+		}
+
+		return !((inChar >= '0') && (inChar <= '9'));
+	};
+
+	std::string::iterator remove_end = std::remove_if(inString.begin(), inString.end(), notIsDigit);
+
+	inString.erase(remove_end, inString.end());
+}

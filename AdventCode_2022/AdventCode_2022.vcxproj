@@ -142,6 +142,8 @@
   <ItemGroup>
     <ClCompile Include="AdventCode_2022.cpp" />
     <ClCompile Include="AdventParser.cpp" />
+    <ClCompile Include="AdventUtility.cpp" />
+    <ClCompile Include="Beacons.cpp" />
     <ClCompile Include="CalorieCount.cpp" />
     <ClCompile Include="ClearingSpace.cpp" />
     <ClCompile Include="Crates.cpp" />
@@ -159,6 +161,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AdventParser.h" />
+    <ClInclude Include="AdventUtility.h" />
+    <ClInclude Include="Beacons.h" />
     <ClInclude Include="CalorieCount.h" />
     <ClInclude Include="ClearingSpace.h" />
     <ClInclude Include="Crates.h" />
