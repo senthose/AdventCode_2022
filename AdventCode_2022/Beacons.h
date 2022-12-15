@@ -30,7 +30,7 @@ namespace Beacon {
 		void ParseSensor(const std::string& inSensorLine);
 
 		size_t GetNumSpacesSensedAtLine(int inLineIndex) const;
-		int GetDistressBeaconFrequency() const;
+		size_t GetDistressBeaconFrequency() const;
 
 		// This map is too big. 
 		void DebugPrintMap() const;

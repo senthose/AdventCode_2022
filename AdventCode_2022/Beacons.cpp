@@ -84,7 +84,7 @@ size_t BeaconMap::GetNumSpacesSensedAtLine(int inLineIndex) const
 	return numScannedPoints;
 }
 
-int BeaconMap::GetDistressBeaconFrequency() const
+size_t BeaconMap::GetDistressBeaconFrequency() const
 {
 	typedef std::vector<Point> PointVector;
 
@@ -174,7 +174,7 @@ int BeaconMap::GetDistressBeaconFrequency() const
 		}
 	}
 	
-	return (scanningPoint.X * 4000000) + scanningPoint.Y;
+	return (static_cast<size_t>(scanningPoint.X) * 4000000) + static_cast<size_t>(scanningPoint.Y);
 }
 
 void BeaconMap::DebugPrintMap() const
