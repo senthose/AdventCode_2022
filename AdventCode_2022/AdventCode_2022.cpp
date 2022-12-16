@@ -18,6 +18,7 @@
 #include "DistressSignal.h"
 #include "Sand.h"
 #include "Beacons.h"
+#include "Volcano.h"
 
 void Day1()
 {
@@ -210,13 +211,14 @@ int main()
 	adventDays[12] = AdventParser::MakeFunction<Distress::DistressSignalParser>("InputFiles\\DistressSignal.txt");
 	adventDays[13] = AdventParser::MakeFunction<Sand::CaveSandParser>("InputFiles\\Cave.txt");
 	adventDays[14] = AdventParser::MakeFunction<Beacon::Parser>("InputFiles\\Sensors.txt");
+	adventDays[15] = AdventParser::MakeFunction<Volcano::Parser>("InputFiles\\VolcanoValves.txt");
 
     std::string inputBuffer;
 
     std::cout << "Enter day:";
 
     //std::cin >> inputBuffer;
-	inputBuffer = "15";
+	inputBuffer = "16";
 
     int inputDay = 0;
     bool validInput = false;

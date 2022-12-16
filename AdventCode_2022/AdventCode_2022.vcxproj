@@ -158,6 +158,7 @@
     <ClCompile Include="Sand.cpp" />
     <ClCompile Include="SignalDevice.cpp" />
     <ClCompile Include="Trees.cpp" />
+    <ClCompile Include="Volcano.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AdventParser.h" />
@@ -177,6 +178,7 @@
     <ClInclude Include="Sand.h" />
     <ClInclude Include="SignalDevice.h" />
     <ClInclude Include="Trees.h" />
+    <ClInclude Include="Volcano.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
