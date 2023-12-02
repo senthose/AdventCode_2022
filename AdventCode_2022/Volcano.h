@@ -14,6 +14,7 @@ namespace Volcano {
 	};
 
 	typedef std::list<ValveRoom*> ValveRoomPtrList;
+	typedef std::vector<ValveRoom*> ValveRoomPtrVector;
 	typedef std::list<ValveRoom> ValveRoomList;
 
 	class ValveNetwork {
@@ -26,12 +27,14 @@ namespace Volcano {
 
 		size_t GetMaxPressureRelease();
 	private:
+		void ResetValve(ValveRoom& inRoom);
 		void ResetValves();
 
 		bool AllValvesOpen() const;
 		void EnterRoom(ValveRoom* inRoom, size_t& outTimePassed);
 		ValveRoom* MoveToBestValve(ValveRoom* currentRoom, size_t& outTimePassed);
 		ValveRoom* GetNextRoom(ValveRoom* currentRoom, size_t& outTimePassed);
+		void MoveThroughRooms(ValveRoom* currentRoom, ValveRoom* targetRoom, ValveRoomPtrVector& inTargetRooms, size_t& outTimePassed, size_t& outPressure);
 
 		ValveRoomPtrList GetShortestPath(const ValveRoom* inFrom, const ValveRoom* inTo);
 

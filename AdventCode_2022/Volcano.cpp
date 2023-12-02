@@ -75,7 +75,18 @@ size_t ValveNetwork::GetMaxPressureRelease()
 
 	ValveRoom& startRoom = GetValveRoom("AA");
 
+
+	ValveRoomPtrVector targets;
+	for (ValveRoom& room : ValveRooms)
+	{
+		if (!room.Opened)
+		{
+			targets.push_back(&room);
+		}
+	}
+
 	size_t timePassed = 0;
+	size_t highestPressue = 0;
 
 	ValveRoom* currentRoom = &startRoom;
 	while (timePassed < 30)
@@ -88,20 +99,34 @@ size_t ValveNetwork::GetMaxPressureRelease()
 		}
 	}
 
-	return CalculateTotalPressure();
+	highestPressue = CalculateTotalPressure();
+
+	/*
+	size_t numTargets = targets.size();
+	ResetValves();
+	timePassed = 0;
+	MoveThroughRooms(currentRoom, targets[0], targets, timePassed, highestPressue);
+	*/
+	
+	return highestPressue;
+}
+
+void ValveNetwork::ResetValve(ValveRoom& room)
+{
+	room.Opened = false;
+	room.TimeOpened = 0;
+
+	if (room.FlowRate == 0)
+	{
+		room.Opened = true;
+	}
 }
 
 void ValveNetwork::ResetValves()
 {
 	for (ValveRoom& room : ValveRooms)
 	{
-		room.Opened = false;
-		room.TimeOpened = 0;
-
-		if (room.FlowRate == 0)
-		{
-			room.Opened = true;
-		}
+		ResetValve(room);
 	}
 }
 
@@ -122,9 +147,9 @@ void ValveNetwork::EnterRoom(ValveRoom* inRoom, size_t& outTimePassed)
 {
 	if (!inRoom->Opened)
 	{
+		++outTimePassed;
 		inRoom->Opened = true;
 		inRoom->TimeOpened = outTimePassed;
-		++outTimePassed;
 	}
 }
 
@@ -181,22 +206,22 @@ ValveRoom* ValveNetwork::GetNextRoom(ValveRoom* currentRoom, size_t& outTimePass
 		data.Path = GetShortestPath(currentRoom, room);
 
 		
+		/*
 		if (highestFlowValue < flowValue)
 		{
 			highestFlowValue = flowValue;
 			highestFlowDistance = data.Path.size();
 			targetData = &data;
 		}
-		
+		*/
 
-		/*
 		size_t pathDistance = data.Path.size();
 		if (pathDistance < lowestFlowDistance)
 		{
 			lowestFlowDistance = pathDistance;
 			targetData = &data;
 		}
-		*/
+		
 	}
 
 	/*
@@ -218,6 +243,7 @@ ValveRoom* ValveNetwork::GetNextRoom(ValveRoom* currentRoom, size_t& outTimePass
 		}
 	}
 	*/
+	
 
 	if (targetData != nullptr)
 	{
@@ -231,6 +257,51 @@ ValveRoom* ValveNetwork::GetNextRoom(ValveRoom* currentRoom, size_t& outTimePass
 	}
 
 	return nullptr;
+}
+
+void ValveNetwork::MoveThroughRooms(ValveRoom* currentRoom, ValveRoom* targetRoom, ValveRoomPtrVector& inTargetRooms, size_t& outTimePassed, size_t& outPressure)
+{
+	if (AllValvesOpen() || outTimePassed >= 30)
+	{
+		size_t pressure = CalculateTotalPressure();
+		if (outPressure < pressure)
+		{
+			outPressure = pressure;
+		}
+		return;
+	}
+
+	EnterRoom(currentRoom, outTimePassed);
+
+	size_t currentTime = outTimePassed;
+
+	ValveRoom* lastRoom = currentRoom;
+	for (size_t i = 0; i < inTargetRooms.size(); ++i)
+	{
+		ValveRoom* room = inTargetRooms[i];
+
+		if (!room->Opened)
+		{
+			ValveRoomPtrList path = GetShortestPath(currentRoom, room);
+
+			for (ValveRoom* room : path)
+			{
+				EnterRoom(currentRoom, outTimePassed);
+				++outTimePassed;
+			}
+
+			MoveThroughRooms(lastRoom, room, inTargetRooms, outTimePassed, outPressure);
+
+			lastRoom = room;
+
+			for (size_t j = i; j < inTargetRooms.size(); ++j)
+			{
+				ResetValve(*inTargetRooms[j]);
+			}
+			
+			outTimePassed = currentTime;
+		}
+	}
 }
 
 ValveRoomPtrList ValveNetwork::GetShortestPath(const ValveRoom* inFrom, const ValveRoom* inTo)
